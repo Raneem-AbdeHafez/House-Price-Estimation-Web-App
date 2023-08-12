@@ -1,0 +1,297 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimator</title>
+</head>
+<body>
+    <h1>House Price Estimator</h1>
+    <form action="/" method="POST">
+        <label for="zip_code">Zip Code:</label>
+        <input type="number" id="zip_code" name="zip_code" required><br><br>
+
+        <label for="square_meters">Square Meters:</label>
+        <input type="number" id="square_meters" name="square_meters" step="0.01" required><br><br>
+
+        <label for="acre_size">Acre Size:</label>
+        <input type="number" id="acre_size" name="acre_size" step="0.01" required><br><br>
+
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if predicted_price %}
+        <h2>Predicted Price: ${{ predicted_price }}</h2>
+    {% endif %}
+</body>
+</html>
+-->
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimator</title>
+</head>
+<body>
+    <h1>House Price Estimator</h1>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload CSV File:</label>
+        <input type="file" id="file" name="file"><br><br>
+    <form action="/" method="POST">
+        <label for="zip_code">Zip Code:</label>
+        <input type="number" id="zip_code" name="zip_code" required><br><br>
+
+        <label for="square_meters">Square Meters:</label>
+        <input type="number" id="square_meters" name="square_meters" step="0.01" required><br><br>
+
+        <label for="acre_size">Acre Size:</label>
+        <input type="number" id="acre_size" name="acre_size" step="0.01" required><br><br>
+
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if predicted_price %}
+        <h2>Predicted Price: ${{ predicted_price }}</h2>
+    {% endif %}
+</body>
+</html>
+
+-->
+
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimator</title>
+</head>
+<body>
+    <h1>House Price Estimator</h1>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload CSV File:</label>
+        <input type="file" id="file" name="file"><br><br>
+
+        <h2>Select columns for training:</h2>
+        {% for column in columns %}
+            <input type="checkbox" name="columns" value="{{ column }}"> {{ column }}<br>
+        {% endfor %}
+        <br>
+
+        <label for="zip_code">Zip Code:</label>
+        <input type="number" id="zip_code" name="zip_code" required><br><br>
+
+        <label for="square_meters">Square Meters:</label>
+        <input type="number" id="square_meters" name="square_meters" step="0.01" required><br><br>
+
+        <label for="acre_size">Acre Size:</label>
+        <input type="number" id="acre_size" name="acre_size" step="0.01" required><br><br>
+
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
+
+        <input type="submit" value="Train and Predict">
+    </form>
+
+    {% if predicted_price %}
+        <h2>Predicted Price: ${{ predicted_price }}</h2>
+    {% endif %}
+
+    {% if error %}
+        <h2>Error: {{ error }}</h2>
+    {% endif %}
+
+    <script>
+        // JavaScript code to dynamically generate checkboxes for CSV columns
+        const fileInput = document.getElementById("file");
+        const columnDiv = document.getElementById("columns-div");
+
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const contents = e.target.result;
+                const lines = contents.split("\n");
+                const columns = lines[0].split(",");
+
+                let html = "";
+                columns.forEach((column) => {
+                    html += `<input type="checkbox" name="columns" value="${column.trim()}"> ${column.trim()}<br>`;
+                });
+
+                columnDiv.innerHTML = html;
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
+-->
+
+
+
+<!---
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimator</title>
+    <script>
+        function showFields(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                const text = reader.result;
+                const firstLine = text.split("\n")[0];
+                const fields = firstLine.split(",");
+                const fieldsContainer = document.getElementById("fields-container");
+                fieldsContainer.innerHTML = fields.map(field => {
+                    return `
+                        <input type="checkbox" name="fields" value="${field}" id="${field}" checked>
+                        <label for="${field}">${field}</label><br>
+                    `;
+                }).join("");
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+</head>
+<body>
+    <h1>House Price Estimator</h1>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="file">Upload CSV File:</label>
+        <input type="file" id="file" name="file" onchange="showFields(event)" accept=".csv"><br><br>
+
+        <div id="fields-container">
+             Dynamically generated checkbox inputs will be inserted here 
+        </div>
+
+        <label for="zip_code">Zip Code:</label>
+        <input type="number" id="zip_code" name="zip_code" required><br><br>
+
+        <label for="square_meters">Square Meters:</label>
+        <input type="number" id="square_meters" name="square_meters" step="0.01" required><br><br>
+
+        <label for="acre_size">Acre Size:</label>
+        <input type="number" id="acre_size" name="acre_size" step="0.01" required><br><br>
+
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+
+        <label for="bathrooms">Number of Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if predicted_price %}
+        <h2>Predicted Price: ${{ predicted_price }}</h2>
+    {% endif %}
+</body>
+</html>
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimation</title>
+</head>
+<body>
+    <h1>House Price Estimation</h1>
+    <form id="csvForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Upload CSV</button>
+    </form>
+
+    <h2>Predict House Price</h2>
+    <form id="predictForm">
+        <label for="zip_code">Zip Code:</label>
+        <input type="text" id="zip_code" name="zip_code" required><br>
+
+        <label for="house_size">House Size (sqft):</label>
+        <input type="number" id="house_size" name="house_size" required><br>
+
+        <label for="acre_lot">Acre Lot:</label>
+        <input type="number" id="acre_lot" name="acre_lot" step="0.01" required><br>
+
+        <label for="bedrooms">Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br>
+
+        <label for="bathrooms">Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" step="0.1" required><br>
+
+        <button type="submit">Predict Price</button>
+    </form>
+
+    <h2>Predicted Price:</h2>
+    <p id="predictedPrice"></p>
+
+    <script>
+        const csvForm = document.getElementById('csvForm');
+        const predictForm = document.getElementById('predictForm');
+        const predictedPrice = document.getElementById('predictedPrice');
+
+        csvForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/train', { method: 'POST', body: formData });
+            const result = await response.json();
+            alert(result.message);
+        });
+
+        predictForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            predictedPrice.innerText = `Predicted Price: $${result.predicted_price.toFixed(2)}`;
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
