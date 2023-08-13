@@ -444,31 +444,32 @@ def train_model():
             return jsonify({'error': 'No file selected'})
 
         # Read the CSV file into a DataFrame
-        df = pd.read_csv(file)
+        data = pd.read_csv(file)
         
         # Preprocess the data and split into features and labels
-        X = df[['zip_code', 'house_size', 'acre_lot', 'bed', 'bath']]
-        y = df['price']
+        X = data.drop(['price'], axis=1)
+        Y = data['price']
 
         # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-
-        # Feature scaling using StandardScaler
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
+        X_train, X_valid, Y_train, Y_valid = train_test_split(X, Y, train_size=0.8, test_size=0.2, random_state=0)
 
         # Train the Linear Regression model
-        model = LinearRegression()
-        model.fit(X_train_scaled, y_train)
+        from sklearn.metrics import mean_absolute_percentage_error
+        from sklearn.ensemble import RandomForestRegressor
+ 
+        model_RFR = RandomForestRegressor(n_estimators=10)
+        model_RFR.fit(X_train, Y_train)
+        Y_pred = model_RFR.predict(X_valid)
+        
+        print(mean_absolute_percentage_error(Y_valid, Y_pred))
 
         # Save the trained model and scaler to disk
-        joblib.dump(model, 'trained_model.joblib')
-        joblib.dump(scaler, 'scaler.joblib')
+        joblib.dump(model_RFR, 'trained_model.joblib')
+        #joblib.dump(scaler, 'scaler.joblib')
 
         # Calculate the R-squared score on the test set
-        r_squared = model.score(X_test_scaled, y_test)
-        print(f'\nR-squared on test set: {r_squared}\n')
+        #r_squared = model.score(X_test_scaled, y_test)
+        #print(f'\nR-squared on test set: {r_squared}\n')
 
         return jsonify({'message': 'Model trained successfully'})
 
@@ -485,8 +486,8 @@ def predict_price():
         zip_code = data['zip_code']
         house_size = data['house_size']
         acre_lot = data['acre_lot']
-        bedrooms = data['bedrooms']
-        bathrooms = data['bathrooms']
+        bedrooms = data['bed']
+        bathrooms = data['bath']
 
         # Feature scaling using the same scaler used during training
         input_features = [[zip_code, house_size, acre_lot, bedrooms, bathrooms]]
@@ -499,8 +500,6 @@ def predict_price():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
 
 
 

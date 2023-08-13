@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimation</title>
+</head>
+<body>
+    <h1>House Price Estimation</h1>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="handleUpload()">Upload CSV</button>
+    
+    <div id="fieldsContainer" style="display: none;">
+        <h2>Select Fields for Training</h2>
+        <form id="fieldsForm">
+            <!-- Field checkboxes will be dynamically added here -->
+        </form>
+        <button onclick="trainModel()">Train Model</button>
+    </div>
+    
+    <div id="predictionContainer" style="display: none;">
+        <h2>Predict House Price</h2>
+        <label for="zipCode">Zip Code:</label>
+        <input type="text" id="zipCode">
+        <br>
+        <label for="squareMeters">Square Meters:</label>
+        <input type="number" id="squareMeters">
+        <br>
+        <label for="acreSize">Acre Size:</label>
+        <input type="number" id="acreSize">
+        <br>
+        <label for="bedrooms">Bedrooms:</label>
+        <input type="number" id="bedrooms">
+        <br>
+        <label for="bathrooms">Bathrooms:</label>
+        <input type="number" id="bathrooms">
+        <br>
+        <button onclick="predictPrice()">Predict Price</button>
+    </div>
+
+    <div id="result" style="display: none;">
+        <h2>Prediction Result</h2>
+        <p id="predictedPrice"></p>
+    </div>
+
+    <script>
+        let selectedFields = [];
+        let modelTrained = false;
+        let model = null;
+
+        function handleUpload() {
+            const fileInput = document.getElementById("csvFile");
+            const file = fileInput.files[0];
+
+            if (file) {
+                parseCSV(file);
+            }
+        }
+
+        function parseCSV(file) {
+            // Simulate parsing and obtaining field names
+            selectedFields = ['zip_code', 'square_meters', 'acre_size', 'bedrooms', 'bathrooms'];
+
+            const fieldsForm = document.getElementById("fieldsForm");
+            fieldsForm.innerHTML = "";
+            
+            selectedFields.forEach(field => {
+                const label = document.createElement("label");
+                label.textContent = field;
+                
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = field;
+                checkbox.checked = true;
+                
+                fieldsForm.appendChild(label);
+                fieldsForm.appendChild(checkbox);
+                fieldsForm.appendChild(document.createElement("br"));
+            });
+
+            const fieldsContainer = document.getElementById("fieldsContainer");
+            fieldsContainer.style.display = "block";
+        }
+
+        function trainModel() {
+            // Simulate model training
+            modelTrained = true;
+            alert("Model trained successfully!");
+            document.getElementById("predictionContainer").style.display = "block";
+        }
+
+        function predictPrice() {
+            if (!modelTrained) {
+                alert("Please train the model first.");
+                return;
+            }
+
+            // Simulate prediction
+            const predictedPrice = calculatePredictedPrice();
+            const predictedPriceElement = document.getElementById("predictedPrice");
+            predictedPriceElement.textContent = `Predicted Price: $${predictedPrice.toFixed(2)}`;
+            
+            const result = document.getElementById("result");
+            result.style.display = "block";
+        }
+
+        function calculatePredictedPrice() {
+            // Simulate prediction calculation
+            const squareMeters = parseFloat(document.getElementById("squareMeters").value);
+            const acreSize = parseFloat(document.getElementById("acreSize").value);
+            const bedrooms = parseFloat(document.getElementById("bedrooms").value);
+            const bathrooms = parseFloat(document.getElementById("bathrooms").value);
+
+            // Basic formula for demonstration
+            return squareMeters * 100 + acreSize * 5000 + bedrooms * 30000 + bathrooms * 20000;
+        }
+    </script>
+</body>
+</html>

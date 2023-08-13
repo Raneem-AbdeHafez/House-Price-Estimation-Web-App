@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimation</title>
+</head>
+<body>
+    <h1>House Price Estimation</h1>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="csv_file" accept=".csv" required>
+        <button type="submit">Train Model</button>
+    </form>
+    <p>{{ message }}</p>
+
+    <!-- <h2>Select Fields for Training</h2>
+    <form id="select-fields-form" method="post">
+        {% for column in columns %}
+        <label>
+            <input type="checkbox" name="selected_columns" value="{{ column }}">{{ column }}
+        </label><br>
+        {% endfor %}
+        <button type="submit">Select Fields</button>
+    </form> -->
+
+    <h2>Predict House Price</h2>
+    <input type="number" id="zip-code" placeholder="Zip Code" required><br>
+    <input type="number" id="house-size" placeholder="House Size" required><br>
+    <input type="number" id="acre-lot" placeholder="Acre Lot" required><br>
+    <input type="number" id="bedrooms" placeholder="Bedrooms" required><br>
+    <input type="number" id="bathrooms" placeholder="Bathrooms" required><br>
+    <button type="button" id="predict-button">Predict Price</button>
+    <p id="prediction-result"></p>
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#predict-button").click(function () {
+                const zipCode = parseInt($("#zip-code").val());
+                const houseSize = parseFloat($("#house-size").val());
+                const acreLot = parseFloat($("#acre-lot").val());
+                const bedrooms = parseInt($("#bedrooms").val());
+                const bathrooms = parseInt($("#bathrooms").val());
+    
+                $.ajax({
+                    url: "/predict",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        zip_code: zipCode,
+                        house_size: houseSize,
+                        acre_lot: acreLot,
+                        bedrooms: bedrooms,
+                        bathrooms: bathrooms,
+                    }),
+                    success: function (response) {
+                        const predictedPrice = response.predicted_price;
+                        $("#prediction-result").html(`Predicted Price: $${predictedPrice.toFixed(2)}`);
+                    },
+                    error: function (error) {
+                        console.log("Error:", error);
+                    }
+                });
+
+            });
+        });
+    </script>    
+</body>
+</html>
