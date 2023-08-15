@@ -15,7 +15,7 @@ def train_model(data, target):
 
 @app.route('/')
 def index():
-    return render_template('index5.html')
+    return render_template('index4.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_csv():
