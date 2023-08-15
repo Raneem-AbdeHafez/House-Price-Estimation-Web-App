@@ -1,28 +1,92 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>House Price Estimation</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>House Price Estimation</title>
+        <style>
+            body {
+                background-color: #d6e3d1;
+            }
+    
+            form {
+                background-color: #cde9ed;
+                padding: 22px;
+                border-radius: 10px;
+                margin-top: 20px;
+                font-size: 19px;
+                font-weight: lighter;
+            }
+
+            #training-message {
+                background-color: #cde9ed;
+                color: black;
+                padding: 20px;
+                border-radius: 10x;
+                margin-top: 20px;
+                text-align: center;
+                font-size: 19px;
+                font-weight: lighter;
+            }
+    
+            label {
+                display: block;
+                margin-bottom: 5px;
+            }
+    
+            input[type="number"],
+            input[type="text"],
+            input[type="file"] {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 10px;
+                border: 0px solid #e2f1f4;
+                border-radius: 5px;
+            }
+    
+            button {
+                background-color: #fcc3b2;
+                color: black;
+                border: none;
+                padding: 15px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 15.5px;
+            }
+    
+            #predicted-price {
+                background-color: #cde9ed;
+                padding: 20px;
+                border-radius: 10px;
+                margin-top: 20px;
+            }
+    
+            #accuracy-result {
+                background-color: #cde9ed;
+                padding: 20px;
+                border-radius: 10px;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    
 <body>
     <h1>House Price Estimation</h1>
     
     <form id="upload-form" enctype="multipart/form-data">
-        <label for="csv-file">Upload CSV File:</label>
+        <label for="csv-file">Upload CSV File and Train the model:</label>
         <input type="file" id="csv-file" name="file" accept=".csv" required>
         <button type="submit">Upload & Train</button>
     </form>
 
     <div id="training-message"></div>
 
-    <h2>Predict House Price</h2>
+    <h2>Insert House Features</h2>
     <form id="prediction-form">
-        <label for="bed">Bedrooms:</label>
+        <label for="bed">Number of Bedrooms:</label>
         <input type="number" id="bed" name="bed" required><br>
         
-        <label for="bath">Bathrooms:</label>
+        <label for="bath"> Number of Bathrooms:</label>
         <input type="number" id="bath" name="bath" required><br>
         
         <label for="house-size">House Size:</label>
@@ -37,7 +101,7 @@
         <button type="button" id="predict-button">Predict Price</button>
     </form>
     
-    <h3>Predicted Price:</h3>
+    <h3>Predicted Price:</h3> 
     <p id="predicted-price"></p>
     
     <button type="button" id="accuracy-button">Calculate Accuracy</button>

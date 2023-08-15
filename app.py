@@ -1,5 +1,3 @@
-# alongside index6.html
-
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -11,10 +9,12 @@ app = Flask(__name__)
 df = None
 model = None
 X_train, X_test, y_train, y_test = None, None, None, None
+port_number=5000
+model_name = RandomForestRegressor()
 
 @app.route('/')
 def index():
-    return render_template('index6.html')
+    return render_template('index7.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -38,7 +38,7 @@ def upload():
         # Split dataset into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        model = RandomForestRegressor()
+        model = model_name
         model.fit(X_train, y_train)
 
         return jsonify({"message": "Model training is completed!"}), 200
@@ -70,4 +70,4 @@ def accuracy():
     return jsonify({"accuracy": accuracy})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=port_number)
