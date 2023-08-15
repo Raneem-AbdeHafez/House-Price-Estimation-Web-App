@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimation</title>
+</head>
+<body>
+    <h1>House Price Estimation</h1>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="handleUpload()">Upload CSV</button>
+    
+    <div id="fieldsContainer" style="display: none;">
+        <h2>Select Fields for Training</h2>
+        <form id="fieldsForm">
+            <!-- Field checkboxes will be dynamically added here -->
+        </form>
+        <button onclick=trainModel()>Train Model</button>
+    </div>
+    
+    <div id="predictionContainer" style="display: none;">
+        <h2>Predict House Price</h2>
+        <label for="zipCode">Zip Code:</label>
+        <input type="text" id="zipCode">
+        <br>
+        <label for="squareMeters">Square Meters:</label>
+        <input type="number" id="squareMeters">
+        <br>
+        <label for="acreSize">Acre Size:</label>
+        <input type="number" id="acreSize">
+        <br>
+        <label for="bedrooms">Bedrooms:</label>
+        <input type="number" id="bedrooms">
+        <br>
+        <label for="bathrooms">Bathrooms:</label>
+        <input type="number" id="bathrooms">
+        <br>
+        <button onclick="predictPrice()">Predict Price</button>
+    </div>
+
+    <div id="result" style="display: none;">
+        <h2>Prediction Result</h2>
+        <p id="predictedPrice"></p>
+    </div>
+
+    <script>
+        let modelTrained = false;
+    
+        function handleUpload() {
+            const fileInput = document.getElementById("csvFile");
+            const file = fileInput.files[0];
+    
+            if (file) {
+                parseCSV(file);
+            }
+        }
+    
+        function parseCSV(file) {
+            const reader = new FileReader();
+    
+            reader.onload = function(event) {
+                const csvData = event.target.result;
+                const lines = csvData.split("\n");
+                const fields = lines[0].split(",");
+                
+                const fieldsForm = document.getElementById("fieldsForm");
+                fieldsForm.innerHTML = "";
+                
+                fields.forEach(field => {
+                    const label = document.createElement("label");
+                    label.textContent = field;
+                    
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.name = "field";
+                    checkbox.value = field;
+                    checkbox.checked = true;
+                    
+                    fieldsForm.appendChild(label);
+                    fieldsForm.appendChild(checkbox);
+                    fieldsForm.appendChild(document.createElement("br"));
+                });
+    
+                const fieldsContainer = document.getElementById("fieldsContainer");
+                fieldsContainer.style.display = "block";
+            };
+    
+            reader.readAsText(file);
+        }
+    
+        function trainModel() {
+            const selectedFields = Array.from(document.querySelectorAll('input[name="field"]:checked')).map(input => input.value);
+            console.log("Selected Fields:", selectedFields); // Log selected fields
+            
+            if (selectedFields.length === 0) {
+                alert("Please select at least one field.");
+                return;
+            }
+            
+            const data = { data: selectedFields.join(',') };
+            
+            fetch('/train', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Train Response:", data); // Log response data
+                if ("error" in data) {
+                    alert(data.error);
+                } else {
+                    modelTrained = true;
+                    document.getElementById("predictionContainer").style.display = "block";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    
+        function predictPrice() {
+            if (!modelTrained) {
+                alert("Please train the model first.");
+                return;
+            }
+    
+            const zipCode = document.getElementById("zipCode").value;
+            const squareMeters = parseFloat(document.getElementById("squareMeters").value);
+            const acreSize = parseFloat(document.getElementById("acreSize").value);
+            const bedrooms = parseFloat(document.getElementById("bedrooms").value);
+            const bathrooms = parseFloat(document.getElementById("bathrooms").value);
+    
+            const input_data = { zipCode, squareMeters, acreSize, bedrooms, bathrooms };
+            
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ input_data }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Predict Response:", data); // Log prediction response
+                if ("error" in data) {
+                    alert(data.error);
+                } else {
+                    const predictedPriceElement = document.getElementById("predictedPrice");
+                    predictedPriceElement.textContent = `Predicted Price: $${data.predicted_price.toFixed(2)}`;
+                    
+                    const result = document.getElementById("result");
+                    result.style.display = "block";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>    
+</body>
+</html>

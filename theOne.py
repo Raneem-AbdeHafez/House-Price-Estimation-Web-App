@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 app = Flask(__name__)
 
@@ -10,12 +10,12 @@ selected_features = []
 
 def train_model(data, target):
     global model
-    model = LinearRegression()
+    model = RandomForestRegressor()
     model.fit(data, target)
 
 @app.route('/')
 def index():
-    return render_template('index2.html')
+    return render_template('index5.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_csv():

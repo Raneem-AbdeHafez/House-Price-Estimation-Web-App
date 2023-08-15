@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Estimation</title>
+</head>
+<body>
+    <h1>House Price Estimation</h1>
+    
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="csv-file">Upload CSV File:</label>
+        <input type="file" id="csv-file" name="file" accept=".csv" required>
+        <button type="submit">Upload & Train</button>
+    </form>
+
+    <div id="training-message"></div>
+
+    <h2>Predict House Price</h2>
+    <form id="prediction-form">
+        <label for="bed">Bedrooms:</label>
+        <input type="number" id="bed" name="bed" required><br>
+        
+        <label for="bath">Bathrooms:</label>
+        <input type="number" id="bath" name="bath" required><br>
+        
+        <label for="house-size">House Size:</label>
+        <input type="number" id="house-size" name="house_size" required><br>
+        
+        <label for="acre-lot">Acre Lot:</label>
+        <input type="number" id="acre-lot" name="acre_lot" step="0.01" required><br>
+        
+        <label for="zip-code">Zip Code:</label>
+        <input type="text" id="zip-code" name="zip_code" required><br>
+        
+        <button type="button" id="predict-button">Predict Price</button>
+    </form>
+    
+    <h3>Predicted Price:</h3>
+    <p id="predicted-price"></p>
+    
+    <button type="button" id="accuracy-button">Calculate Accuracy</button>
+    <p id="accuracy-result"></p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const uploadForm = document.getElementById("upload-form");
+            const predictButton = document.getElementById("predict-button");
+            const trainingMessage = document.getElementById("training-message");
+            const predictedPrice = document.getElementById("predicted-price");
+            const accuracyButton = document.getElementById("accuracy-button");
+            const accuracyResult = document.getElementById("accuracy-result");
+            
+            uploadForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(uploadForm);
+                
+                try {
+                    const response = await fetch("/upload", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    console.log(data);
+
+                    if (data.message) {
+                        trainingMessage.textContent = "Model training is completed!";
+                    }
+                } catch (error) {
+                    console.error("Error uploading file:", error);
+                }
+            });
+            
+            predictButton.addEventListener("click", async () => {
+                const bed = parseFloat(document.getElementById("bed").value);
+                const bath = parseFloat(document.getElementById("bath").value);
+                const houseSize = parseFloat(document.getElementById("house-size").value);
+                const acreLot = parseFloat(document.getElementById("acre-lot").value);
+                const zipCode = document.getElementById("zip-code").value;
+
+                const input_data = {
+                    "bed": bed,
+                    "bath": bath,
+                    "house_size": houseSize,
+                    "acre_lot": acreLot,
+                    "zip_code": zipCode
+                };
+
+                try {
+                    const response = await fetch("/predict", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(input_data)
+                    });
+
+                    const data = await response.json();
+                    predictedPrice.textContent = `Predicted Price: $${data.predicted_price.toFixed(2)}`;
+                } catch (error) {
+                    console.error("Error predicting price:", error);
+                    predictedPrice.textContent = "Error predicting price";
+                }
+            });
+
+
+            accuracyButton.addEventListener("click", async () => {
+                try {
+                    const response = await fetch("/accuracy");
+                    const data = await response.json();
+                    
+                    if (data.accuracy !== undefined) {
+                        accuracyResult.textContent = `Model Accuracy: ${(data.accuracy * 100).toFixed(2)}%`;
+                    } else {
+                        accuracyResult.textContent = "Error calculating accuracy";
+                    }
+                } catch (error) {
+                    console.error("Error calculating accuracy:", error);
+                    accuracyResult.textContent = "Error calculating accuracy";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
